@@ -41,6 +41,7 @@ class LearningParameters:
         "CIFAR10CNN": nets.Cifar10CNN,
         "CIFAR10ResNet": nets.Cifar10ResNet,
         "FashionMNISTCNN": nets.FashionMNISTCNN,
+        "FashionMNISTCNN1": nets.FashionMNISTCNN1,
         "FashionMNISTResNet": nets.FashionMNISTResNet
     }
 

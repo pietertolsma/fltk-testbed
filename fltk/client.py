@@ -1,5 +1,6 @@
 import datetime
 import logging
+import time
 from pathlib import Path
 from typing import List, Tuple
 
@@ -46,6 +47,7 @@ class Client(object):
         self.loss_function = self.learning_params.get_loss()()
         self.dataset = self.learning_params.get_dataset_class()(self.config, self.learning_params, self._id,
                                                                 self._world_size)
+        self.testset = self.learning_params.get_dataset_class()(self.config, self.learning_params, 0, 1)
         self.model = self.learning_params.get_model_class()()
         self.device = self._init_device()
 
@@ -182,7 +184,9 @@ class Client(object):
 
         # Disable gradient calculation, as we are only interested in predictions
         with torch.no_grad():
-            for (images, labels) in self.dataset.get_test_loader():
+            # Extra test time for master node introduced by this can be ignored.
+            dataset = self.dataset if self._id > 0 else self.testset
+            for (images, labels) in dataset.get_test_loader():
                 images, labels = images.to(self.device), labels.to(self.device)
 
                 outputs = self.model(images)
@@ -251,6 +255,7 @@ class Client(object):
             epoch_results.append(data)
             if self._id == 0:
                 self.log_progress(data, epoch)
+        time.sleep(5)
         return epoch_results
 
     def save_model(self, epoch):

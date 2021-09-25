@@ -3,18 +3,18 @@
     "jobClassParameters": [
       {
         "networkConfiguration": {
-          "network": "FashionMNISTCNN",
+          "network": "FashionMNISTCNN1",
           "dataset": "FashionMNIST"
         },
         "systemParameters": {
-          "dataParallelism": "1",
+          "dataParallelism": "2",
           "executorCores": "750m",
           "executorMemory": "1Gi",
           "action": "train"
         },
         "hyperParameters": {
           "batchSize": "128",
-          "maxEpoch": "5",
+          "maxEpoch": "3",
           "learningRate": "0.01",
           "learningrateDecay": "0.0002"
         },
