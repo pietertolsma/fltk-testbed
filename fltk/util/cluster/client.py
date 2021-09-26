@@ -323,7 +323,7 @@ class DeploymentBuilder:
         job_spec.openapi_types = job_spec.swagger_types
         self._buildDescription.spec = job_spec
 
-    def construct(self) -> V1PyTorchJob:
+    def construct(self, task: ArrivalTask) -> V1PyTorchJob:
         """
         Contruct V1PyTorch object following the description of the building process. Note that V1PyTorchJob differs
         slightly from a V1Job object in Kubernetes. Refer to the kubeflow documentation for more information on the
@@ -331,10 +331,15 @@ class DeploymentBuilder:
         @return: V1PyTorchJob object that was dynamically constructed.
         @rtype: V1PyTorchJob
         """
+        name = "%s-%s-%s-%s-%s-%s" % \
+               (task.network[-2:], task.sys_conf.data_parallelism,
+                task.param_conf.bs, (task.param_conf.lr.replace(".", "")), task.sys_conf.executor_cores,
+                str(self._buildDescription.id)[:8])
+        name = name.lower()
         job = V1PyTorchJob(
             api_version="kubeflow.org/v1",
             kind="PyTorchJob",
-            metadata=V1ObjectMeta(name=f'trainjob-{self._buildDescription.id}', namespace='test'),
+            metadata=V1ObjectMeta(name=f'trainjob-{name}', namespace='test'),
             spec=self._buildDescription.spec)
         return job
 
@@ -360,6 +365,6 @@ def construct_job(conf: BareConfig, task: ArrivalTask) -> V1PyTorchJob:
     dp_builder.build_tolerations()
     dp_builder.build_template()
     dp_builder.build_spec(task)
-    job = dp_builder.construct()
+    job = dp_builder.construct(task)
     job.openapi_types = job.swagger_types
     return job

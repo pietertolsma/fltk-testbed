@@ -51,6 +51,11 @@ class Client(object):
         self.model = self.learning_params.get_model_class()()
         self.device = self._init_device()
 
+
+        name = "%s-%s-%s-%s-%s" % \
+               (learning_params.model[-2:], self._world_size,
+                learning_params.batch_size, str(learning_params.learning_rate).replace(".", ""), str(self._task_id)[:8])
+        self._name = name.lower()
         self.optimizer: torch.optim.Optimizer
         self.scheduler: LearningScheduler
         self.tb_writer: SummaryWriter
@@ -81,7 +86,7 @@ class Client(object):
                                           self.config.get_min_lr())
 
         self.tb_writer = SummaryWriter(
-            str(self.config.get_log_path(self._task_id, self._id, self.learning_params.model)))
+            str(self.config.get_log_path(self._name, self._id, self.learning_params.model)))
 
     def stop_learner(self):
         """

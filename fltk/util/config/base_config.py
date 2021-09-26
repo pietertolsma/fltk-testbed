@@ -147,7 +147,7 @@ class BareConfig(object):
         @rtype: Path
         """
         base_log = Path(self.execution_config.tensorboard.record_dir)
-        experiment_dir = Path(f"{self.execution_config.experiment_prefix}_{client_id}_{network_name}_{experiment_id}")
+        experiment_dir = Path(f"{self.execution_config.experiment_prefix}_{experiment_id}_{client_id}_{network_name}")
         return base_log.joinpath(experiment_dir)
 
     def get_scheduler_step_size(self) -> int:
