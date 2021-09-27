@@ -227,6 +227,7 @@ class DeploymentBuilder:
                    f'--optimizer Adam --max_epoch {task.param_conf.max_epoch} '
                    f'--batch_size {task.param_conf.bs} --learning_rate {task.param_conf.lr} '
                    f'--decay {task.param_conf.lr_decay} --loss CrossEntropy '
+                   f'--max_time {task.param_conf.max_time} --core_info {task.sys_conf.executor_cores} '
                    f'--backend gloo')
         return command.split(' ')
 
@@ -332,8 +333,8 @@ class DeploymentBuilder:
         @rtype: V1PyTorchJob
         """
         name = "%s-%s-%s-%s-%s-%s" % \
-               (task.network[-2:], task.sys_conf.data_parallelism,
-                task.param_conf.bs, (task.param_conf.lr.replace(".", "")), task.sys_conf.executor_cores,
+               (task.network[-2:], task.sys_conf.data_parallelism, task.sys_conf.executor_cores,
+                task.param_conf.bs, (task.param_conf.lr.replace(".", "")),
                 str(self._buildDescription.id)[:8])
         name = name.lower()
         job = V1PyTorchJob(

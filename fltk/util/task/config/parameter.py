@@ -19,6 +19,7 @@ class HyperParameters:
     """
     bs: int = field(metadata=config(field_name="batchSize"))
     max_epoch: int = field(metadata=config(field_name="maxEpoch"))
+    max_time: float = field(metadata=config(field_name="maxTime"))
     lr: str = field(metadata=config(field_name="learningRate"))
     lr_decay: str = field(metadata=config(field_name="learningrateDecay"))
 

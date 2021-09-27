@@ -51,11 +51,11 @@ class Client(object):
         self.model = self.learning_params.get_model_class()()
         self.device = self._init_device()
 
-
-        name = "%s-%s-%s-%s-%s" % \
-               (learning_params.model[-2:], self._world_size,
+        name = "%s-%s-%s-%s-%s-%s" % \
+               (learning_params.model[-2:], self._world_size, self.learning_params.core_info,
                 learning_params.batch_size, str(learning_params.learning_rate).replace(".", ""), str(self._task_id)[:8])
         self._name = name.lower()
+
         self.optimizer: torch.optim.Optimizer
         self.scheduler: LearningScheduler
         self.tb_writer: SummaryWriter
@@ -260,6 +260,10 @@ class Client(object):
             epoch_results.append(data)
             if self._id == 0:
                 self.log_progress(data, epoch)
+
+            if train_time_ms > self.learning_params.max_time * 60 * 1000:
+                break
+
         time.sleep(5)
         return epoch_results
 
