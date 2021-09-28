@@ -237,7 +237,7 @@ class DeploymentBuilder:
             name=name,
             image=conf.cluster_config.image,
             command=self._generate_command(conf, task),
-            image_pull_policy='Always',
+            image_pull_policy='IfNotPresent',
             # Set the resources to the pre-generated resources
             resources=self._buildDescription.resources,
             volume_mounts=vol_mnts

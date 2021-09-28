@@ -24,6 +24,7 @@ spec:
             - --logdir
             - logging
           image: {{ .Values.provider.domain }}/{{ .Values.provider.projectName }}/{{ .Values.provider.imageName }}
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 6006
           resources: {}

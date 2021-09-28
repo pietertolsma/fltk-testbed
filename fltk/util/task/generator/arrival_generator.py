@@ -110,7 +110,8 @@ class ExperimentGenerator(ArrivalGenerator):
         """
         self.logger.info(f"Creating task for {task_id}")
         job: JobDescription = self.job_dict[task_id]
-        parameters: JobClassParameter = choices(job.job_class_parameters, [param.class_probability for param in job.job_class_parameters])[0]
+        parameters: JobClassParameter = \
+        choices(job.job_class_parameters, [param.class_probability for param in job.job_class_parameters])[0]
         priority = choices(parameters.priorities, [prio.probability for prio in parameters.priorities], k=1)[0]
 
         inter_arrival_ticks = np.random.poisson(lam=job.arrival_statistic)
@@ -148,28 +149,48 @@ class ExperimentGenerator(ArrivalGenerator):
         """
         np.random.seed(42)
         self.start_time = time.time()
-        self.logger.info("Populating tick lists with initial arrivals")
-        for task_id in self.job_dict.keys():
-            new_arrival: Arrival = self.generate_arrival(task_id)
-            self._tick_list.append(new_arrival)
-            self.logger.info(f"Arrival {new_arrival} arrives at {new_arrival.ticks} seconds")
-        event = multiprocessing.Event()
-        while self._alive and time.time() - self.start_time < duration:
-            save_time = time.time()
 
-            new_scheduled = []
-            for entry in self._tick_list:
-                entry.ticks -= self._decrement
-                if entry.ticks <= 0:
-                    self.arrivals.put(entry)
-                    new_arrival = self.generate_arrival(entry.task_id)
-                    new_scheduled.append(new_arrival)
-                    self.logger.info(f"Arrival {new_arrival} arrives at {new_arrival.ticks} seconds")
-                else:
-                    new_scheduled.append(entry)
-            self._tick_list = new_scheduled
-            # Correct for time drift between execution, otherwise drift adds up, and arrivals don't generate correctly
-            correction_time = time.time() - save_time
-            event.wait(timeout=self._decrement - correction_time)
-        self.stop_time = time.time()
-        self.logger.info(f"Stopped execution at: {self.stop_time}, duration: {self.stop_time - self.start_time}/{duration}")
+        self.logger.info("Scheduling all jobs..")
+        job_count = len(self.job_dict)
+
+        for task_id in self.job_dict.keys():
+            arrival: Arrival = self.generate_arrival(task_id)
+            self.arrivals.put(arrival)
+
+        print("Scheduled " + str(job_count) + " jobs in total.")
+
+    # def old_run(self, duration: float):
+    #     """
+    #     Run function to generate arrivals during existence of the Orchestrator. Accounts time-drift correction for
+    #     long-term execution duration of the generator (i.e. for time taken by Python interpreter).
+    #     @return: None
+    #     @rtype: None
+    #     """
+    #     np.random.seed(42)
+    #     self.start_time = time.time()
+    #     self.logger.info("Populating tick lists with initial arrivals")
+    #     for task_id in self.job_dict.keys():
+    #         new_arrival: Arrival = self.generate_arrival(task_id)
+    #         self._tick_list.append(new_arrival)
+    #         self.logger.info(f"Arrival {new_arrival} arrives at {new_arrival.ticks} seconds")
+    #     event = multiprocessing.Event()
+    #     while self._alive and time.time() - self.start_time < duration:
+    #         save_time = time.time()
+    #
+    #         new_scheduled = []
+    #         for entry in self._tick_list:
+    #             entry.ticks -= self._decrement
+    #             if entry.ticks <= 0:
+    #                 self.arrivals.put(entry)
+    #                 new_arrival = self.generate_arrival(entry.task_id)
+    #                 new_scheduled.append(new_arrival)
+    #                 self.logger.info(f"Arrival {new_arrival} arrives at {new_arrival.ticks} seconds")
+    #             else:
+    #                 new_scheduled.append(entry)
+    #         self._tick_list = new_scheduled
+    #         # Correct for time drift between execution, otherwise drift adds up, and arrivals don't generate correctly
+    #         correction_time = time.time() - save_time
+    #         event.wait(timeout=self._decrement - correction_time)
+    #     self.stop_time = time.time()
+    #     self.logger.info(
+    #         f"Stopped execution at: {self.stop_time}, duration: {self.stop_time - self.start_time}/{duration}")

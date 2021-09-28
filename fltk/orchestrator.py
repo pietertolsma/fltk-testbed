@@ -85,9 +85,7 @@ class Orchestrator(object):
                 self.__logger.debug(f"Arrival of: {task}")
                 self.pending_tasks.put(task)
 
-            while not self.pending_tasks.empty():
-                # Do blocking request to priority queue
-                curr_task = self.pending_tasks.get()
+            for curr_task in self.pending_tasks.queue:
                 self.__logger.info(f"Scheduling arrival of Arrival: {curr_task.id}")
                 job_to_start = construct_job(self._config, curr_task)
 
@@ -97,11 +95,13 @@ class Orchestrator(object):
                 self.__client.create(job_to_start, namespace=self._config.cluster_config.namespace)
                 self.deployed_tasks.append(curr_task)
 
-                # TODO: Extend this logic in your real project, this is only meant for demo purposes
-                # For now we exit the thread after scheduling a single task.
+                self.__logger.info("Waiting on task to finish..")
+                self.__client.wait_for_condition(job_to_start.metadata.name, expected_condition=["Succeeded", "Failed"],
+                                                 namespace='test')
+                self.__logger.info("Done waiting on task to finish")
 
-                self.stop()
-                return
+            # self.stop()
+            # return
 
             self.__logger.debug("Still alive...")
             time.sleep(5)
