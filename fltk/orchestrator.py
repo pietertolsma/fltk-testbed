@@ -130,3 +130,16 @@ class Orchestrator(object):
             except Exception as e:
                 self.__logger.warning(f'Could not delete: {job_name}')
                 print(e)
+        for job in self.__client.get(namespace=self._config.cluster_config.namespace)['items']:
+            job_name = job['metadata']['name']
+            self.__logger.info(f'Deleting: {job_name}')
+            try:
+                self.__client.custom_api.delete_namespaced_custom_object(
+                    PYTORCHJOB_GROUP,
+                    PYTORCHJOB_VERSION,
+                    namespace,
+                    PYTORCHJOB_PLURAL,
+                    job_name)
+            except Exception as e:
+                self.__logger.warning(f'Could not delete: {job_name}')
+                print(e)

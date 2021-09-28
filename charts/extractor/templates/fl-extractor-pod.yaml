@@ -23,6 +23,7 @@ spec:
           args:
             - --logdir
             - logging
+          imagePullPolicy: IfNotPresent
           image: {{ .Values.provider.domain }}/{{ .Values.provider.projectName }}/{{ .Values.provider.imageName }}
           ports:
             - containerPort: 6006

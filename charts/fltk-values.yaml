@@ -1,6 +1,7 @@
 fltk:
     config: cloud_experiment.yaml
+
 provider:
     domain: gcr.io
-    projectName: test-bed-distml
+    projectName: cs4215
     imageName: fltk:latest

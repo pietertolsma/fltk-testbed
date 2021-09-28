@@ -236,7 +236,7 @@ class DeploymentBuilder:
             name=name,
             image=conf.cluster_config.image,
             command=self._generate_command(conf, task),
-            image_pull_policy='Always',
+            image_pull_policy='IfNotPresent',
             # Set the resources to the pre-generated resources
             resources=self._buildDescription.resources,
             volume_mounts=vol_mnts
@@ -269,7 +269,8 @@ class DeploymentBuilder:
 
     def build_tolerations(self, tols: List[Tuple[str, Optional[str], str, str]] = None):
         if not tols:
-            self._buildDescription.tolerations = [
+            self._buildDescription.tolerations = \
+                [
                 V1Toleration(key="fltk.node",
                              operator="Exists",
                              effect="NoSchedule")]

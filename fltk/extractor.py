@@ -30,6 +30,6 @@ def download_datasets(args: Namespace, config: BareConfig):
     # Prepare Fashion MNIST
     FashionMNIST(root=root, download=True)
     # Prepare CIFAR10
-    CIFAR10(root=root, download=True)
-    # Prepare CIFAR100
-    CIFAR100(root=root, download=True)
+    # CIFAR10(root=root, download=True)
+    # # Prepare CIFAR100
+    # CIFAR100(root=root, download=True)
