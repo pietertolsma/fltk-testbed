@@ -293,3 +293,6 @@ class Client(object):
         self.tb_writer.add_scalar('accuracy per epoch',
                                   epoch_data.accuracy,
                                   epoch)
+        self.tb_writer.add_scalar('time',
+                                  float(epoch_data.duration_train),
+                                  epoch)

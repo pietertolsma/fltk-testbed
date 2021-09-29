@@ -80,7 +80,7 @@ def launch_orchestrator(args: Namespace = None, conf: BareConfig = None):
         conf.cluster_config.load_incluster_namespace()
         conf.cluster_config.load_incluster_image()
 
-    arrival_generator = ExperimentGenerator(Path("configs/tasks/custom_factors_test.json"))
+    arrival_generator = ExperimentGenerator(Path("configs/tasks/custom_factors.json"))
     cluster_manager = ClusterManager()
 
     orchestrator = Orchestrator(cluster_manager, arrival_generator, conf)
