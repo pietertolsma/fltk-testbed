@@ -13,7 +13,7 @@
         },
         "hyperParameters": {
           "batchSize": "128",
-          "maxEpoch": "20",
+          "maxEpoch": "500",
           "maxTime": "8",
           "learningRate": "0.01",
           "learningrateDecay": "0.0002"
