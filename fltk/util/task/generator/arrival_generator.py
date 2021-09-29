@@ -1,3 +1,5 @@
+import copy
+import json
 import logging
 import multiprocessing
 import time
@@ -62,6 +64,32 @@ class Arrival:
         return self.task.hyper_parameters
 
 
+def generate_custom(custom_config):
+    with open(custom_config, 'r') as f:
+        config = json.load(f)
+    with open("configs/tasks/arrival_config_template.json", 'r') as f:
+        template = json.load(f)
+    output = []
+    for net in config["factors"]["network"]:
+        for dp in config["factors"]["dataParallelism"]:
+            for ec in config["factors"]["executorCores"]:
+                for bs in config["factors"]["batchSize"]:
+                    for lr in config["factors"]["learningRate"]:
+                        for mt in config["factors"]["maxTime"]:
+                            for _ in range(config["duplicate"]):
+                                trial = copy.deepcopy(template)
+                                trial["jobClassParameters"][0]["networkConfiguration"]["network"] = net
+                                trial["jobClassParameters"][0]["systemParameters"]["dataParallelism"] = dp
+                                trial["jobClassParameters"][0]["systemParameters"]["executorCores"] = ec
+                                trial["jobClassParameters"][0]["hyperParameters"]["batchSize"] = bs
+                                trial["jobClassParameters"][0]["hyperParameters"]["learningRate"] = lr
+                                trial["jobClassParameters"][0]["hyperParameters"]["maxTime"] = mt
+                                output.append(trial)
+    with open("configs/tasks/custom_arrival_config.json", 'w') as f:
+        json.dump(output, f, indent=4)
+    return Path("configs/tasks/custom_arrival_config.json")
+
+
 class ExperimentGenerator(ArrivalGenerator):
     start_time: float = -1
     stop_time: float = -1
@@ -73,7 +101,7 @@ class ExperimentGenerator(ArrivalGenerator):
     __default_config: Path = Path('configs/tasks/example_arrival_config.json')
 
     def __init__(self, custom_config: Path = None):
-        super(ExperimentGenerator, self).__init__(custom_config or self.__default_config)
+        super(ExperimentGenerator, self).__init__(self.__default_config if custom_config is None else generate_custom(custom_config))
         self.load_config()
 
     def set_logger(self, name: str = None):

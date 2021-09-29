@@ -2,6 +2,7 @@ import logging
 import os
 from argparse import Namespace
 from multiprocessing.pool import ThreadPool
+from pathlib import Path
 
 import torch.distributed as dist
 from kubernetes import config
@@ -79,7 +80,7 @@ def launch_orchestrator(args: Namespace = None, conf: BareConfig = None):
         conf.cluster_config.load_incluster_namespace()
         conf.cluster_config.load_incluster_image()
 
-    arrival_generator = ExperimentGenerator()
+    arrival_generator = ExperimentGenerator(Path("configs/tasks/custom_factors_test.json"))
     cluster_manager = ClusterManager()
 
     orchestrator = Orchestrator(cluster_manager, arrival_generator, conf)

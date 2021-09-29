@@ -1,0 +1,11 @@
+{
+  "duplicate": 3,
+  "factors": {
+    "network": ["FashionMNISTCNN1", "FashionMNISTCNN2"],
+    "dataParallelism": ["2", "4"],
+    "executorCores": ["500m", "1000m"],
+    "batchSize": ["32", "64", "128"],
+    "learningRate": ["0.01", "0.001", "0.0001"],
+    "maxTime": ["20"]
+  }
+}
