@@ -97,7 +97,7 @@ class Orchestrator(object):
 
                 self.__logger.info("Waiting on task to finish..")
                 self.__client.wait_for_condition(job_to_start.metadata.name, expected_condition=["Succeeded", "Failed"],
-                                                 namespace='test')
+                                                 namespace='test', timeout_seconds=60000)
                 self.__logger.info("Done waiting on task to finish")
 
             # self.stop()
