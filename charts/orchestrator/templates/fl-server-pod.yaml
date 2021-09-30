@@ -23,7 +23,7 @@ spec:
           value: {{ .Values.provider.domain }}/{{ .Values.provider.projectName }}/{{ .Values.provider.imageName }}
       image: {{ .Values.provider.domain }}/{{ .Values.provider.projectName }}/{{ .Values.provider.imageName }}
       name: federation-lab-server
-      imagePullPolicy: IfNotPresent
+      imagePullPolicy: Always
       resources:
         limits:
           cpu: {{ (.Values.orchestrator.cpu | int) }}
