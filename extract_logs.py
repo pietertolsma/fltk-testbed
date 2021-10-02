@@ -1,18 +1,18 @@
 from tensorflow.python.summary.summary_iterator import summary_iterator
 import os, re, sys
 
-experiment_name_regex = re.compile(r'trainjob-(.*?)-(.*?)-(.*?)-(.*?)-(.*?)-')
+experiment_name_regex = re.compile(r'trainjob-n(\d+)-(.*?)-(.*?)-(.*?)-(.*?)-')
 metric_regex = re.compile(r'(.*?) per epoch')
 
 time_level_interval = 500000
-time_levels = [i * time_level_interval for i in range(1, 10)]
+time_levels = [i * time_level_interval for i in range(1, 4)]
 aggregated_data = []
 logs_dir = sys.argv[1] if len(sys.argv) > 1 else 'logging'
 
 def log_to_csv(experiment_name, path, final_log):
 	try:
 		event_acc = summary_iterator(path)
-		_, dp, cores, batch_size, lr = experiment_name_regex.search(experiment_name).groups()
+		network, dp, cores, batch_size, lr = experiment_name_regex.search(experiment_name).groups()
 
 		experiment_data = dict()
 
@@ -25,7 +25,7 @@ def log_to_csv(experiment_name, path, final_log):
 					experiment_data[tag] = []
 				experiment_data[tag].append([step, v.simple_value])
 		
-		out = open (f'results/dp{dp}-cores{cores}-bs{batch_size}-lr{lr}.csv', 'w')
+		out = open(f'results/n{network}-dp{dp}-cores{cores}-bs{batch_size}-lr{lr}.csv', 'a')
 		for tag, values in experiment_data.items():
 			out.write(tag + '\n')
 			out.write(f'epoch step,{tag}\n')
@@ -44,14 +44,14 @@ def log_to_csv(experiment_name, path, final_log):
 			
 			accuracy = experiment_data['accuracy'][idx][-1]
 			training_loss = experiment_data['training loss'][idx][-1]
-			aggregated_data.append(f'{wtime},{time_level},{dp},{cores},{batch_size},{lr},{accuracy},{training_loss}')
+			aggregated_data.append(f'{wtime},{time_level},{network}.{dp},{cores},{batch_size},{lr},{accuracy},{training_loss}')
 
 			if idx == len(wtimes) - 1:
 				break
 	
 		if final_log:
 			aggregated_csv = open('results/aggregated data.csv', 'w')
-			aggregated_csv.write('time(ms),time_level(ms),data_parallelism,cores,batch_size,learning_rate,accuracy,training loss\n')
+			aggregated_csv.write('time(ms),time_level(ms),network depth,data_parallelism,cores,batch_size,learning_rate,accuracy,training loss\n')
 			aggregated_csv.write('\n'.join(aggregated_data))
 			aggregated_csv.close()
 
