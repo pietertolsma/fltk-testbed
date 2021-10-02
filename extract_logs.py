@@ -44,7 +44,7 @@ def log_to_csv(experiment_name, path, final_log):
 			
 			accuracy = experiment_data['accuracy'][idx][-1]
 			training_loss = experiment_data['training loss'][idx][-1]
-			aggregated_data.append(f'{wtime},{time_level},{network},{dp},{cores},{batch_size},{lr},{accuracy},{training_loss}')
+			aggregated_data.append(f'{wtime},{time_level},{network},{dp},{cores},{batch_size},{float(lr[0]+"."+lr[1:])},{accuracy},{training_loss}')
 
 			if idx == len(wtimes) - 1:
 				break
