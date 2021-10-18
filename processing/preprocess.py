@@ -6,7 +6,7 @@ df = pd.read_csv("D:/logging/results/aggregated data.csv")
 print(df)
 df = df.drop(columns=["time(ms)", "training loss"])
 df = df.rename(columns={"time_level(ms)": "time_level", "network depth": "layers", "data_parallelism": "nodes"})
-df = df.replace({"time_level": {300000 * i: i for i in range(1, 5)},
+df = df.replace({"time_level": {v: i+1 for i, v in enumerate(sorted(set(df.time_level)))},
                  "cores": {"1000m": 1, "2000m": 2},
                  "batch_size": {32: 1, 64: 2, 128: 3},
                  "learning_rate": {0.01: 1, 0.001: 2, 0.0001: 3}})
